@@ -31,22 +31,22 @@ A Django app to validate cell phone numbers through SMS messages.
 ## A basic flow ##
 
 1.  User inputs cell phone number.
-1.  The app/page make a POST request to the **confirm-phone/confirmation/** endpoint with the phone number entered by the user.
+1.  The app/page make a POST request to the **phone-confirmation/confirmation/** endpoint with the phone number entered by the user.
 1. An SMS message is sent to the phone number with a 4 number code.
 1. The user enter the code on the App/Page
-1. The app/page make a POST request to the **confirm-phone/activation-key/** endpoint with the code entered by the user.
+1. The app/page make a POST request to the **phone-confirmation/activation-key/** endpoint with the code entered by the user.
      The response is a signed activation key if the code is correct, or a 400 status response otherwise.
 1. Then the app/page can use the phone number or save the activation key to use it later.
 
 
 ## Endpoints ##
 
-### confirm-phone/confirmation/ ###
+### phone-confirmation/confirmation/ ###
 
 Request example:
 
     curl -X POST \
-      http://localhost:8000/confirm-phone/confirmation/ \
+      http://localhost:8000/phone-confirmation/confirmation/ \
       -H 'cache-control: no-cache' \
       -H 'content-type: application/json' \
       -d '{
@@ -60,13 +60,13 @@ Response example:
 And the code 6108 (just a example, the code is picked randomly) is sent by SMS to the phone.
 
 
-### confirm-phone/activation-key/ ###
+### phone-confirmation/activation-key/ ###
 
 
 Request example:
 
     curl -X POST \
-      http://localhost:8000/confirm-phone/activation-key/ \
+      http://localhost:8000/phone-confirmation/activation-key/ \
       -H 'cache-control: no-cache' \
       -H 'content-type: application/json' \
       -d '{
@@ -83,13 +83,13 @@ Fail response example:
     {"error": "Invalid activation key"}
 
 
-### confirm-phone/activation-key/{activation key}/ ###
+### phone-confirmation/activation-key/{activation key}/ ###
 
 Request example:
 
 
     curl -X GET \
-      http://localhost:8000/confirm-phone/activation-key/eyJwaG9uZV9udW1iZXIiOiIrMTIwMjU1NTEyMzQifQ:1dHsio:RvZd7XLwZPvWrN0OI4jA2R5PT8Q/ \
+      http://localhost:8000/phone-confirmation/activation-key/eyJwaG9uZV9udW1iZXIiOiIrMTIwMjU1NTEyMzQifQ:1dHsio:RvZd7XLwZPvWrN0OI4jA2R5PT8Q/ \
       -H 'cache-control: no-cache' \
       -H 'content-type: application/json'
 
