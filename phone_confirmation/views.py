@@ -4,7 +4,7 @@ from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from phone_confirmation.models import PhoneNumberConfirmation
+from phone_confirmation.models import PhoneConfirmation
 from phone_confirmation.serializers import (ActivationKeySerializer,
                                             ConfirmationSerializer)
 
@@ -32,7 +32,7 @@ class GetActivationKeyView(APIView):
 
     def get(self, request, activation_key, *args, **kwargs):
         try:
-            phone_number = PhoneNumberConfirmation.objects.validate_key(activation_key)
+            phone_number = PhoneConfirmation.objects.validate_key(activation_key)
             if phone_number:
                 return Response(status=status.HTTP_200_OK, data={'phone_number': phone_number})
             raise

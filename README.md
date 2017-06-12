@@ -13,7 +13,7 @@ A Django app to validate cell phone numbers through SMS messages.
 
         pip install django_phone_confirmation
 
-2. Add django_phone_confirmation app to INSTALLED_APPS in your django settings.py:
+2. Add phone_confirmation app to INSTALLED_APPS in your django settings.py:
 
         INSTALLED_APPS = (
             ...,
