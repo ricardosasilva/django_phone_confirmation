@@ -6,7 +6,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='django_phone_confirmation',
-    version='0.2.5',
+    version='0.2.6',
     packages=find_packages(),
     license='MIT',
     author='Ricardo S. A. Silva',
@@ -14,7 +14,11 @@ setup(
     keywords='django cell phone confirmation',
     author_email='ricardo@salamandra.cc',
     long_description=open('README.md').read(),
-    install_requires=['django_rest', 'django-sendsms==0.2.3'],
+    install_requires=[
+        'django_rest',
+        'django-sendsms==0.3.1',
+        'django-phonenumber-field==2.0.0'
+    ],
     include_package_data=True,
     url='https://github.com/ricardosasilva/django_phone_confirmation',
     classifiers=[
