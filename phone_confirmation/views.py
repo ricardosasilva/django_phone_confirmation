@@ -13,11 +13,11 @@ logger = logging.getLogger(__name__)
 
 class ConfirmationView(generics.CreateAPIView):
     serializer_class = ConfirmationSerializer
-    throttle_scope = 'phone-number-confirmation'
+    throttle_scope = 'phone-confirmation-confirmation'
 
 
 class ActivationKeyView(APIView):
-    throttle_scope = 'phone-number-confirmation'
+    throttle_scope = 'phone-confirmation-activation-key'
 
     def post(self, request, *args, **kwargs):
         serializer = ActivationKeySerializer(data=request.data)
@@ -28,7 +28,7 @@ class ActivationKeyView(APIView):
 
 
 class GetActivationKeyView(APIView):
-    throttle_scope = 'phone-number-confirmation'
+    throttle_scope = 'phone-confirmation-activation-key'
 
     def get(self, request, activation_key, *args, **kwargs):
         try:
@@ -36,6 +36,7 @@ class GetActivationKeyView(APIView):
             if phone_number:
                 return Response(status=status.HTTP_200_OK, data={'phone_number': phone_number})
             raise
-        except Exception as e:
+        except Exception:
             logger.exception('Error decoding activation key')
+
         return Response(status=status.HTTP_400_BAD_REQUEST, data={'error': 'Invalid activation key'})
