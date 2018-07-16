@@ -3,7 +3,7 @@
 
 A Django app to validate cell phone numbers through SMS messages.
 
- It uses Django Rest to implement a couple of endpoints to confirm the number and django-sendsms to send the messages.
+ It uses Django Rest to implement a couple of endpoints to confirm the number and django-sendsms to send messages.
 
 
 ## Installation ##
@@ -30,8 +30,8 @@ A Django app to validate cell phone numbers through SMS messages.
 
 ## A basic flow ##
 
-1.  User inputs cell phone number.
-1.  The app/page make a POST request to the **phone-confirmation/confirmation/** endpoint with the phone number entered by the user.
+1. User inputs cell phone number.
+1. The app/page make a POST request to the **phone-confirmation/confirmation/** endpoint with the phone number entered by the user.
 1. An SMS message is sent to the phone number with a 4 number code.
 1. The user enter the code on the App/Page
 1. The app/page make a POST request to the **phone-confirmation/activation-key/** endpoint with the code entered by the user.
@@ -135,8 +135,15 @@ Response example:
 
    **NOTE:** As we use the django-sendsms package you need to configure it with your SMS Gateway in order to delivery SMS messages.
 
+**SILENT_CONFIRMATIONS_FILTER**
+
+  A callable with a single argument to ignore fake tests numbers. If it returns True the SMS won't be send.
+
+    Example:
+    SILENT_CONFIRMATIONS_FILTER = lambda to: to[:8] == '+1212555'  # Ignore numbers starting with +1212555.
+
 
 ## Throttle Scope ##
 
-
-  phone-number-confirmation
+  - phone-number-confirmation: Endpoint to request a phone number confirmation (Wiil sent SMS)
+  - phone-confirmation-activation-key: Endpoints to validate codes and activation keys.
