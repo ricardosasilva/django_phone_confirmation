@@ -26,9 +26,11 @@ class ActivationKeySerializer(serializers.ModelSerializer):
         is_valid = super(ActivationKeySerializer, self).is_valid(raise_exception=raise_exception)
         self.instance = self.Meta.model.objects.get_confirmation_code(phone_number=self.validated_data['phone_number'],
                                                                       code=self.validated_data['code'])
-        self.instance.send_activation_key_created_signal()
-        self.Meta.model.objects.clear_phone_number_confirmations(phone_number=self.validated_data['phone_number'])
-
-        if is_valid and not self.instance:
-            raise serializers.ValidationError({"error": _("The code or phone number are invalid.")})
+        if is_valid:
+            if self.instance:
+                user = self.context.get('user')
+                self.instance.send_activation_key_created_signal(user=user)
+                self.Meta.model.objects.clear_phone_number_confirmations(phone_number=self.validated_data['phone_number'])
+            else:
+                raise serializers.ValidationError({"error": _("The code or phone number are invalid.")})
         return is_valid

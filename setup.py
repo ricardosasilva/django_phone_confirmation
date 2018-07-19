@@ -6,7 +6,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='django_phone_confirmation',
-    version='0.3.4',
+    version='0.3.5',
     packages=find_packages(),
     license='MIT',
     author='Ricardo S. A. Silva',

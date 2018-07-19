@@ -105,8 +105,8 @@ class PhoneConfirmation(models.Model):
                      to=[to])
         self._send_signal_and_log(confirmation_sms_sent, phone_number=self.phone_number)
 
-    def send_activation_key_created_signal(self):
-        self._send_signal_and_log(activation_key_created, phone_number=self.phone_number, activation_key=self.activation_key)
+    def send_activation_key_created_signal(self, user=None):
+        self._send_signal_and_log(activation_key_created, phone_number=self.phone_number, activation_key=self.activation_key, user=user)
 
 
 @receiver(post_save, sender=PhoneConfirmation)

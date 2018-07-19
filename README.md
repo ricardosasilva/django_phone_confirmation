@@ -154,3 +154,4 @@ Response example:
 
 0.3.3 - Changed settings ACTIVATION_MINUTES to ACTIVATION_TIMEOUT and the period time to seconds. Changed settingg SMS_TEMPLATE to SMS_MESSAGE.
 0.3.4 - Add activation_key_created signal.
+0.3.5 - Add user to activation_key_created signal.

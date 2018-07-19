@@ -20,7 +20,7 @@ class ActivationKeyView(APIView):
     throttle_scope = 'phone-confirmation-activation-key'
 
     def post(self, request, *args, **kwargs):
-        serializer = ActivationKeySerializer(data=request.data)
+        serializer = ActivationKeySerializer(data=request.data, context={'user': request.user})
         if serializer.is_valid():
             return Response(status=status.HTTP_200_OK, data=serializer.data)
         else:
