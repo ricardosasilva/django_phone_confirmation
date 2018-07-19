@@ -35,7 +35,6 @@ class GetActivationKeyView(APIView):
             phone_number = PhoneConfirmation.objects.validate_key(activation_key)
             if phone_number:
                 return Response(status=status.HTTP_200_OK, data={'phone_number': phone_number})
-            raise
         except Exception:
             logger.exception('Error decoding activation key')
 

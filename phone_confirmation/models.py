@@ -8,10 +8,9 @@ from django.core import signing
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.template.loader import render_to_string
 from django.utils import timezone
 from phone_confirmation.fields import RandomPinField
-from phone_confirmation.signals import confirmation_sms_sent
+from phone_confirmation.signals import confirmation_sms_sent, activation_key_created
 from phonenumber_field.modelfields import PhoneNumberField
 from sendsms import api
 
@@ -22,8 +21,8 @@ phone_settings = getattr(settings, 'PHONE_CONFIRMATION', {})
 
 
 SALT = phone_settings.get('SALT', 'phonenumber')
-ACTIVATION_MINUTES = phone_settings.get('ACTIVATION_MINUTES', 15)
-SMS_TEMPLATE = phone_settings.get('SMS_TEMPLATE', 'phone_confirmation/message.txt')
+ACTIVATION_TIMEOUT = phone_settings.get('ACTIVATION_TIMEOUT', 15 * 60)  # Seconds
+SMS_MESSAGE = phone_settings.get('SMS_MESSAGE', 'Your confirmation code is %(code)s')
 FROM_NUMBER = phone_settings.get('FROM_NUMBER', '')
 MAX_CONFIRMATIONS = phone_settings.get('MAX_CONFIRMATIONS', 10)
 SILENT_CONFIRMATIONS_FILTER = phone_settings.get('SILENT_CONFIRMATIONS_FILTER', None)
@@ -43,7 +42,7 @@ class PhoneConfirmationManager(models.Manager):
             phone_number = signing.loads(
                 activation_key,
                 salt=SALT,
-                max_age=ACTIVATION_MINUTES * 60
+                max_age=ACTIVATION_TIMEOUT
             )
             return phone_number.get('phone_number')
         except signing.BadSignature:
@@ -51,7 +50,7 @@ class PhoneConfirmationManager(models.Manager):
 
     def get_confirmation_code(self, phone_number, code):
         """Get the PhoneConfirmation for the phone number and code."""
-        time_threshold = timezone.now() - timedelta(minutes=ACTIVATION_MINUTES)
+        time_threshold = timezone.now() - timedelta(minutes=ACTIVATION_TIMEOUT)
         return self.get_queryset().filter(created_at__gte=time_threshold,
                                           phone_number=phone_number,
                                           code=code).order_by('-created_at').first()
@@ -95,9 +94,7 @@ class PhoneConfirmation(models.Model):
                              exc_info=(type(exc), exc, exc.__traceback__))
 
     def send_sms(self, request=None):
-        message = render_to_string(template_name=SMS_TEMPLATE,
-                                   context={"code": self.code},
-                                   request=request).strip()
+        message = SMS_MESSAGE % {'code': self.code}
         to = str(self.phone_number)
         if callable(SILENT_CONFIRMATIONS_FILTER) and SILENT_CONFIRMATIONS_FILTER(to) is True:
             logger.debug("Filtered phone confirmation SMS to:%s text:%s", to, message)
@@ -107,6 +104,9 @@ class PhoneConfirmation(models.Model):
                      from_phone=FROM_NUMBER,
                      to=[to])
         self._send_signal_and_log(confirmation_sms_sent, phone_number=self.phone_number)
+
+    def send_activation_key_created_signal(self):
+        self._send_signal_and_log(activation_key_created, phone_number=self.phone_number, activation_key=self.activation_key)
 
 
 @receiver(post_save, sender=PhoneConfirmation)

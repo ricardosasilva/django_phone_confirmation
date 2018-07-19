@@ -17,7 +17,7 @@ class ActivationKeySerializer(serializers.ModelSerializer):
         model = PhoneConfirmation
         fields = ('phone_number', 'code', 'activation_key')
         extra_kwargs = {
-            'phone_number': {'write_only': True},
+            'phone_number': {'write_only': True, 'required': True},
             'code': {'write_only': True},
             'activation_key': {'read_only': True}
         }
@@ -26,6 +26,7 @@ class ActivationKeySerializer(serializers.ModelSerializer):
         is_valid = super(ActivationKeySerializer, self).is_valid(raise_exception=raise_exception)
         self.instance = self.Meta.model.objects.get_confirmation_code(phone_number=self.validated_data['phone_number'],
                                                                       code=self.validated_data['code'])
+        self.instance.send_activation_key_created_signal()
         self.Meta.model.objects.clear_phone_number_confirmations(phone_number=self.validated_data['phone_number'])
 
         if is_valid and not self.instance:

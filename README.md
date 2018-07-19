@@ -106,8 +106,8 @@ Response example:
 
     PHONE_CONFIRMATION = {
         "SALT": "phonenumber",
-        "ACTIVATION_MINUTES": 15,
-        "SMS_TEMPLATE": "django_phone_confirmation/message.txt",
+        "ACTIVATION_TIMEOUT": 15,
+        "SMS_MESSAGE": "Your confirmation code is %(code)s",
         "FROM_NUMBER": "",
         "MAX_CONFIRMATIONS": 10
     }
@@ -117,12 +117,13 @@ Response example:
 
   Used as salt when creating activation keys.
 
-**ACTIVATION_MINUTES**
+**ACTIVATION_TIMEOUT**
 
-  How many minutes the user have to confirm the number after the initial requesting
+  How many seconds the user have to confirm the number after the initial requesting
 
-**SMS_TEMPLATE**
-  The template file for the message. The message on the default template is the i18n string: **Your confirmation code: {{ code }}**
+**SMS_MESSAGE**
+  The SMS message that will be send to users. The default message is "Your confirmation code is %(code)s".
+  Use %{code}s variable to indicate where the confirmation code should be placed.
 
 **FROM_NUMBER**
 
@@ -147,3 +148,9 @@ Response example:
 
   - phone-number-confirmation: Endpoint to request a phone number confirmation (Wiil sent SMS)
   - phone-confirmation-activation-key: Endpoints to validate codes and activation keys.
+
+
+## Changelog ##
+
+0.3.3 - Changed settings ACTIVATION_MINUTES to ACTIVATION_TIMEOUT and the period time to seconds. Changed settingg SMS_TEMPLATE to SMS_MESSAGE.
+0.3.4 - Add activation_key_created signal.
